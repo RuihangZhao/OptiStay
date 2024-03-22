@@ -1,3 +1,5 @@
+GEOCODE_API_KEY="dc5cde1f0b5c403184fd2cb1e709e401";
+
 addEventListener("keypress", function(event)
 {
     if (event.key=== "Enter")
@@ -51,21 +53,86 @@ function updatePagination(page, totalPage) {
     nextBtn.className = page < totalPage ? 'page-item' : 'page-item disabled';
 }
 
+let map;
+let modalMap;
+
+function initializeSmallMap(latitude, longitude) {
+  if (map) {
+    map.remove();
+  }
+  map = L.map('smallMap').setView([latitude, longitude], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+    maxZoom: 18,
+  }).addTo(map);
+}
+
+function initializeModalMap(latitude, longitude, hotelData) {
+  if (modalMap) {
+    modalMap.remove(); 
+  }
+
+  modalMap = L.map('modalMap').setView([latitude, longitude], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+      maxZoom: 18,
+    }).addTo(modalMap);
+
+  // Add markers for each hotel
+  hotelData.forEach(item => {
+    const marker = L.marker([item["latitude"], item["longitude"]]).addTo(modalMap);
+    marker.bindPopup(`
+      <b>${item["hotelname"]}</b><br>
+      ${item["address"]}<br>
+      Rating: ${item["starrating"]}
+      `, {
+        autoPan: false // Avoid auto-panning when the popup opens
+      });
+  });
+
+  setTimeout(function() {
+    modalMap.invalidateSize();
+  }, 100);
+}
+
+async function geocodeLocation(location) {
+    // need moved to flask
+    const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=${GEOCODE_API_KEY}`;
+    
+    try {
+      const response = await axios.get(url);
+      const data = response.data;
+      
+      if (data.results.length > 0) {
+        const lat = data.results[0].geometry.lat;
+        const lng = data.results[0].geometry.lng;
+        return [lat, lng];
+      }
+    } catch (error) {
+      console.error('Error geocoding location:', error);
+    }
+    
+    return null;
+  }
+
 function fetchData(page, itemsPerPage, country, city, address, zipcode){
     axios({method: 'GET', url: 'http://127.0.0.1:5000/hotelInfo',
-        params: {'country': country, 'city': city, 'page': page, 'limit': itemsPerPage}}).then(function (res){
+        params: {'country': country, 'city': city, 'page': page, 'limit': itemsPerPage}}).then(async function (res){
             const dataContainer = document.getElementById("result_list");
             dataContainer.innerHTML = "";
             res = res.data;
             let length = res["length"];
             let hotelData = res["hotelData"];
             let totalPage = Math.ceil(length / itemsPerPage);
+
             if (length === 0){
                 document.getElementById("result_info").innerHTML = "No Hotels Found in " + city;
                 document.getElementById("result_list").style.display = 'none';
             } else {
                 document.getElementById("result_info").innerHTML = city + ": " + length.toString() + " Hotels Found";
-                hotelData.forEach(item =>{
+                hotelData.forEach((item,index) =>{
                     let hotel = document.createElement('div');
                     let starsHtml = '';
                     for (let i = 0; i < item["starrating"]; i++) {
@@ -75,7 +142,7 @@ function fetchData(page, itemsPerPage, country, city, address, zipcode){
                     hotel.innerHTML = `
                         <div class="row">
                             <div class="col-md-3 mt-2 mb-2 ml-2 mr-2 pl-0 pr-0 box1" style="height:150px">
-                                <img class="border-0" height="100%" width="100%" src='${item["image_url"]}'>
+                                <a href='${item["final_url"]}' target="_blank"}'><img class="border-0" height="100%" width="100%" src='${item["image_url"]}'></a>
                             </div>
                             <div class="col-md-5 mt-2 mb-2 ml-2 mr-2 pl-0 pr-0">
                                 <h4 style="color: rgb(28, 93, 111)">${item["hotelname"]}</h4>
@@ -89,8 +156,15 @@ function fetchData(page, itemsPerPage, country, city, address, zipcode){
 
                 updatePagination(page, totalPage);
 
-
             }
+            const coordinates = await geocodeLocation(`${country} ${city}`);
+            document.getElementById('smallMap').addEventListener('click', function () {
+                $('#mapModal').on('shown.bs.modal', function () {
+                    initializeModalMap(coordinates[0], coordinates[1], hotelData);
+                  });
+                  
+                $('#mapModal').modal('show');
+            });
         }).catch(function (error){
             console.error('Error fetching data:', error);
     });
@@ -98,12 +172,12 @@ function fetchData(page, itemsPerPage, country, city, address, zipcode){
 
 
 
-window.addEventListener('load', function (){
+window.addEventListener('load',function (){
     let country;
     let city;
     let address;
     let zipcode;
-    axios({method: 'GET', url: 'http://127.0.0.1:5000/searchKey'}).then(function (res){
+    axios({method: 'GET', url: 'http://127.0.0.1:5000/searchKey'}).then(async function (res){
         res = res.data;
         // console.log(res)
         country = res["country"];
@@ -119,6 +193,10 @@ window.addEventListener('load', function (){
         const itemsPerPage = 20;
         let currentPage = 1;
         fetchData(currentPage, itemsPerPage, country, city, address, zipcode);
+        const coordinates = await geocodeLocation(`${country} ${city}`);
+        if (coordinates) {
+            initializeSmallMap(coordinates[0], coordinates[1]);
+        }
         document.getElementById('prev-page').addEventListener('click', function (e) {
             e.preventDefault();
             if (currentPage > 1) {
