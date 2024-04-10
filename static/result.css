@@ -1,0 +1,39 @@
+body
+{
+    margin: 0px 0px;
+    padding: 0px 0px;
+}
+.bg-image {
+    background-image: url('imgs/background.jpg');
+    height: 20vh;
+    min-height: 100px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.transparent-button {
+    background: transparent;
+    color: inherit; 
+    border-style:solid;
+    border-color: white;
+    border-width: 1px;
+    box-shadow: none; 
+}
+
+.transparent-button:hover,
+.transparent-button:focus {
+  background: transparent;
+  opacity: 0.5;
+  border-style:solid;
+  border-color: rgba(255, 255, 255, 0.813);
+  box-shadow: none;
+}
+
+.box1
+{
+    border-width: 1px;
+    border-style:solid;
+    border-color: rgb(231, 231, 231);
+    border-radius: 5px;
+}
