@@ -13,7 +13,7 @@ document.getElementById("admin_login").addEventListener("click", function(){
     window.location.href = "dashboard/dashboard.html";
 });
 
-
+// id: "button" is the button on index page
 document.getElementById("button").addEventListener("click", function(){
     let country;
     let city;
@@ -119,7 +119,7 @@ async function geocodeLocation(location) {
 
 function fetchData(page, itemsPerPage, country, city, address, zipcode){
     axios({method: 'GET', url: 'http://127.0.0.1:5000/hotelInfo',
-        params: {'country': country, 'city': city, 'page': page, 'limit': itemsPerPage}}).then(async function (res){
+        params: {'country': country, 'city': city, 'address': address, 'zipcode': zipcode, 'page': page, 'limit': itemsPerPage}}).then(async function (res){
             const dataContainer = document.getElementById("result_list");
             dataContainer.innerHTML = "";
             res = res.data;
@@ -131,18 +131,23 @@ function fetchData(page, itemsPerPage, country, city, address, zipcode){
                 document.getElementById("result_info").innerHTML = "No Hotels Found in " + city;
                 document.getElementById("result_list").style.display = 'none';
             } else {
-                document.getElementById("result_info").innerHTML = city + ": " + length.toString() + " Hotels Found";
+                if (city){
+                    document.getElementById("result_info").innerHTML = city + ": " + length.toString() + " Hotels Found";
+                }
+                else {
+                    document.getElementById("result_info").innerHTML = length.toString() + " Hotels Found";
+                }
                 hotelData.forEach((item,index) =>{
                     let hotel = document.createElement('div');
                     let starsHtml = '';
                     for (let i = 0; i < item["starrating"]; i++) {
-                        starsHtml += '<i class="fas fa-star" style="color: yellow;"></i>';
+                        starsHtml += '<i class="fas fa-star" style="color: rgba(251,188,101,255);"></i>';
                     }
                     hotel.className = "container box1";
                     hotel.innerHTML = `
-                        <div class="row">
+                        <div class="row" style="cursor: pointer" onclick=window.open('${item["final_url"]}')>
                             <div class="col-md-3 mt-2 mb-2 ml-2 mr-2 pl-0 pr-0 box1" style="height:150px">
-                                <a href='${item["final_url"]}' target="_blank"}'><img class="border-0" height="100%" width="100%" src='${item["image_url"]}'></a>
+                                <a><img class="border-0" height="100%" width="100%" src='${item["image_url"]}'></a>
                             </div>
                             <div class="col-md-5 mt-2 mb-2 ml-2 mr-2 pl-0 pr-0">
                                 <h4 style="color: rgb(28, 93, 111)">${item["hotelname"]}</h4>
