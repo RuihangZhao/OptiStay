@@ -56,6 +56,7 @@ async function fetchLocationData() {
   
       const countryData = {};
       const propertyTypeData={};
+      let total = 0;
       hotelsData.forEach(hotel => {
         const { country, propertytype} = hotel;
         if (!countryData[country]) {
@@ -74,6 +75,7 @@ async function fetchLocationData() {
         }
         countryData[country].value++;
         propertyTypeData[propertytype].count++;
+        total++;
       });
 
       const mapData = [];
@@ -90,7 +92,7 @@ async function fetchLocationData() {
       {
         barData.push({
             name: propertyTypeData[propertytype].name,
-            y: propertyTypeData[propertytype].count
+            y: 100*propertyTypeData[propertytype].count/total
         });
       }
 
@@ -169,17 +171,28 @@ async function fetchLocationData() {
             },
             series: [
                 {
-                    name: 'Counts: ',
+                    name: 'Percentage: ',
                     colorByPoint: true,
                     data: barData
                 }
             ]
         });
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error when fetching hotel data:', error);
     }
 }
 
+async function fetchUserData()
+{
+    try{
+        const res = await axios({ method: "GET", url: "http://127.0.0.1:5000/user_analysis" });
+        const userData = res.data;
+        console.log(userData);
+    }catch(error)
+    {
+        console.error('Error when fetching user data: ', error)
+    }
+}
 window.addEventListener('load', function(){
     fetchLocationData()
 })

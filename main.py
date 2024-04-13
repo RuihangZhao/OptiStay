@@ -89,7 +89,16 @@ def hotelInfo():
 
 @app.route('/dashboard')
 def dashboardInfo():
-    response = requests.get(DATABASE_URL_1 + '.json').text
+    response1 = requests.get(DATABASE_URL_1 + '.json').text
+    data1 = json.loads(response1)
+    response2 = requests.get(DATABASE_URL_2 + '.json').text
+    data2 = json.loads(response1)
+    data1.extend(data2)
+    return data1
+
+@app.route('/user_analysis')
+def userRecordInfo():
+    response = requests.get(DATABASE_URL_USERDATA+'.json').text
     data = json.loads(response)
     return data
 
