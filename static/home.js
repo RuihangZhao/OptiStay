@@ -86,7 +86,8 @@ function initializeModalMap(latitude, longitude, hotelData) {
     marker.bindPopup(`
       <b>${item["hotelname"]}</b><br>
       ${item["address"]}<br>
-      Rating: ${item["starrating"]}
+      Rating: ${item["starrating"]}<br>
+      <a href="${item['url']}" target="_blank">View Details</a>
       `, {
         autoPan: false // Avoid auto-panning when the popup opens
       });
