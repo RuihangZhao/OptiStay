@@ -3,6 +3,7 @@ from flask_cors import CORS
 import requests
 import json
 from datetime import datetime
+from itertools import islice
 
 DATABASE_URL_1 = 'https://dsci551-5pm-9f5a2-default-rtdb.firebaseio.com/hotels'
 DATABASE_URL_2 = 'https://dsci551-pro2-default-rtdb.firebaseio.com/hotels'
@@ -93,7 +94,7 @@ def dashboardInfo():
     data1 = json.loads(response1)
     response2 = requests.get(DATABASE_URL_2 + '.json').text
     data2 = json.loads(response1)
-    data1.extend(data2)
+    data1.update(data2)
     return data1
 
 @app.route('/user_analysis')
@@ -106,12 +107,22 @@ def userRecordInfo():
 def datasetInfo():
     response1 = requests.get(DATABASE_URL_1 + '.json').text
     data1 = json.loads(response1)
-    return data1[:1000]
+    first_1000_pairs = dict(islice(data1.items(), 1000))
+    return first_1000_pairs
 
-@app.route('/delete-hotel/<int:hotel_id>', methods=['DELETE'])
+@app.route('/delete-hotel/<string:hotel_id>', methods=['DELETE'])
 def delete_hotel(hotel_id):
-    print(f"Deleting hotel with ID: {hotel_id}")
-    return jsonify({"success": True, "message": "Hotel deleted successfully"})
+    url1 = f"{DATABASE_URL_1}/{hotel_id}.json"
+    url2 = f"{DATABASE_URL_2}/{hotel_id}.json"
+    response1 = requests.delete(url1)
+    response2 = requests.delete(url2)
+
+    if response1.status_code == 200:
+        return jsonify({"success": True, "message": f"Hotel with ID: {hotel_id} deleted successfully from db1"})
+    elif response2.status_code == 200:
+        return jsonify({"success": True, "message": f"Hotel with ID: {hotel_id} deleted successfully from db2"})
+    else:
+        return jsonify({"success": False, "message": "Failed to delete the hotel", "error": response1.json()})
 
 if __name__ == '__main__':
     app.run(debug=True)

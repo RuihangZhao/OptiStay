@@ -49,8 +49,8 @@ const countryCodes = new Map([
 async function fetchLocationData() {
     try {
       const res = await axios({ method: "GET", url: "http://127.0.0.1:5000/dashboard" });
-      const hotelsData = res.data;
-  
+      const data = res.data;
+      const hotelsData = Object.values(data);
       const topology = await fetch('https://code.highcharts.com/mapdata/custom/europe.topo.json')
         .then(response => response.json());
   

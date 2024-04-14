@@ -3,7 +3,6 @@ async function renderTable(){
         const tableBody = document.getElementById('datasetTableBody');
         const res = await axios({ method: "GET", url: "http://127.0.0.1:5000/dataset" });
         const hotelsData = res.data;
-        console.log(hotelsData);
         let tableRows = `<thead>
         <tr>
             <th scope="col">id</th>
@@ -23,11 +22,11 @@ async function renderTable(){
         </tr>
         </thead>`;
         tableRows+='<tbody>'
-        hotelsData.forEach(hotel => {
+       Object.entries(hotelsData).forEach(([hotelId, hotel]) => {
             tableRows += `
             <tr>
               <td contenteditable="true" data-field="id">${hotel.id}</td>
-              <td contenteditable="true" data-field="hotelId">${hotel.hotelid}</td>
+              <td contenteditable="true" data-field="hotelId">${hotelId}</td>
               <td contenteditable="true" data-field="hotelName">${hotel.hotelname}</td>
               <td contenteditable="true" data-field="address">${hotel.address}</td>
               <td contenteditable="true" data-field="city">${hotel.city}</td>
@@ -39,7 +38,7 @@ async function renderTable(){
               <td contenteditable="true" data-field="longitude">${hotel.longitude.toFixed(2)}</td>
               <td contenteditable="true" data-field="source">${hotel.Source}</td>
               <td contenteditable="true" data-field="url">${hotel.url}</td>
-              <td><button class="deleteButton" data-id="${hotel.hotelid}">Delete</button></td>
+              <td><button class="deleteButton" data-id="${hotelId}" onclick="handleRowDelete(event)">Delete</button></td>
             </tr>
           `;
         });
@@ -56,8 +55,8 @@ function handleRowDelete(event)
 {
     if (event.target.classList.contains('deleteButton'))
     {
-        const hotelID = event.target.getAttribute('data-id')
-        fetch(`http://127.0.0.1:5000/delete-hotel/${hotelID}`, {
+        const hotelId = event.target.getAttribute('data-id')
+        fetch(`http://127.0.0.1:5000/delete-hotel/${hotelId}`, {
             method: 'DELETE'
         }).then(response=>response.json())
         .then(data=>{
