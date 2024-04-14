@@ -141,6 +141,26 @@ def insert_hotel(hotel_id):
     else:
         return jsonify({"success": False, "message": "Failed to insert the hotel", "error": response.json()})
 
+@app.route('/update-hotel/<string:hotel_id>', methods=['PUT'])
+def update_hotel(hotel_id):
+    field = request.json['field']
+    value = request.json['value']
+    country = request.json['country']
+
+    if country[0].upper() in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']:
+        update_url = DATABASE_URL_1
+    else:
+        update_url = DATABASE_URL_2
+
+    url = f"{update_url}/{hotel_id}.json"
+    patch_data = {field: value}
+    response = requests.patch(url, json=patch_data)
+
+    if response.status_code != 200:
+        return jsonify({"success": False, "message": "Failed to update hotel field"})
+
+    return jsonify({"success": True, "message": "Hotel field updated successfully"})
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -25,15 +25,15 @@ async function renderTable(){
        Object.entries(hotelsData).forEach(([hotelId, hotel]) => {
             tableRows += `
             <tr>
-              <td contenteditable="true" data-field="id">${hotel.id}</td>
-              <td contenteditable="true" data-field="hotelId">${hotelId}</td>
-              <td contenteditable="true" data-field="hotelName">${hotel.hotelname}</td>
+              <td contenteditable="false" data-field="id">${hotel.id}</td>
+              <td contenteditable="false" data-field="hotelId">${hotelId}</td>
+              <td contenteditable="true" data-field="hotelname">${hotel.hotelname}</td>
               <td contenteditable="true" data-field="address">${hotel.address}</td>
               <td contenteditable="true" data-field="city">${hotel.city}</td>
               <td contenteditable="true" data-field="country">${hotel.country}</td>
-              <td contenteditable="true" data-field="zipCode">${hotel.zipcode}</td>
-              <td contenteditable="true" data-field="propertyType">${hotel.propertytype}</td>
-              <td contenteditable="true" data-field="starRating">${hotel.starrating}</td>
+              <td contenteditable="true" data-field="zipcode">${hotel.zipcode}</td>
+              <td contenteditable="true" data-field="propertytype">${hotel.propertytype}</td>
+              <td contenteditable="true" data-field="starrating">${hotel.starrating}</td>
               <td contenteditable="true" data-field="latitude">${hotel.latitude.toFixed(2)}</td>
               <td contenteditable="true" data-field="longitude">${hotel.longitude.toFixed(2)}</td>
               <td contenteditable="true" data-field="source">${hotel.Source}</td>
@@ -109,6 +109,50 @@ async function handleRowInsert()
         }
     }
 }
+
+async function handleCellEdit(event)
+{
+    if (event.target.hasAttribute('contenteditable')){
+        const row = event.target.parentNode;
+        const hotelId = row.querySelector('.deleteButton').getAttribute('data-id');
+        const field = event.target.getAttribute('data-field');
+        let value = event.target.textContent;
+        const country = row.querySelector('[data-field="country"]').textContent;
+
+        switch (field) {
+            case 'id':
+            case 'zipcode':
+            case 'Source':
+                value = parseInt(value, 10);
+                break;
+            case 'starrating':
+                value = parseInt(value, 10);
+                break;
+            case 'latitude':
+            case 'longitude':
+                value = parseFloat(value);
+                break;
+        }
+        
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/update-hotel/${hotelId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ field, value, country}),
+            });
+
+            const data = await response.json();
+            console.log(data.message);
+
+        } catch (error) {
+            console.error('Error updating hotel field:', error);
+        }
+    }
+}
+
 window.addEventListener('load', function(){
     renderTable()
+    document.addEventListener('input', handleCellEdit);
 })
