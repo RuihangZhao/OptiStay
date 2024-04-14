@@ -124,5 +124,23 @@ def delete_hotel(hotel_id):
     else:
         return jsonify({"success": False, "message": "Failed to delete the hotel", "error": response1.json()})
 
+@app.route('/insert-hotel/<string:hotel_id>', methods=['PUT'])
+def insert_hotel(hotel_id):
+    new_hotel_data = request.json
+
+    country = new_hotel_data['country']
+    if country[0].upper() in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']:
+        insert_url = DATABASE_URL_1
+    else:
+        insert_url = DATABASE_URL_2
+
+    response = requests.put(insert_url + f'/{hotel_id}.json', json=new_hotel_data)
+
+    if response.status_code == 200:
+        return jsonify({"success": True, "message": f"New hotel inserted successfully in {insert_url}", "hotel_id": hotel_id})
+    else:
+        return jsonify({"success": False, "message": "Failed to insert the hotel", "error": response.json()})
+
+
 if __name__ == '__main__':
     app.run(debug=True)

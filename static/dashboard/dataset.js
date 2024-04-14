@@ -69,6 +69,46 @@ function handleRowDelete(event)
         .catch(error=>console.error("Error deleting: ", error));
     }
 }
+
+async function handleRowInsert()
+{
+    const attributeValues = prompt('Enter the attribute values (comma-separated) in the following order:\nhotelID, ID, Hotel Name, Address, City, Country, Zip Code, Property Type, Star Rating, Latitude, Longitude, Source, URL');
+    if (attributeValues)
+    {
+        const [hotelId, id, hotelname, address, city, country, zipcode, propertytype, starrating, latitude, longitude, Source, url] = attributeValues.split(',').map(value => value.trim());
+        const newHotel = {
+            id: parseInt(id),
+            hotelname, 
+            address,
+            city, 
+            country,
+            zipcode: parseInt(zipcode),
+            propertytype,
+            starrating: parseInt(starrating),
+            latitude: parseFloat(latitude), 
+            longitude: parseFloat(longitude),
+            Source: parseInt(Source),
+            url
+        };
+
+        try
+        {
+            const response = await fetch(`http://127.0.0.1:5000/insert-hotel/${hotelId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newHotel)
+            });
+
+            const data = await response.json();
+            console.log(data.message);
+            renderTable();
+        }catch (error){
+            console.error('Error inserting hotel data: ', error);
+        }
+    }
+}
 window.addEventListener('load', function(){
     renderTable()
 })
