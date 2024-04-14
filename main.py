@@ -102,6 +102,16 @@ def userRecordInfo():
     data = json.loads(response)
     return data
 
+@app.route('/dataset')
+def datasetInfo():
+    response1 = requests.get(DATABASE_URL_1 + '.json').text
+    data1 = json.loads(response1)
+    return data1[:1000]
+
+@app.route('/delete-hotel/<int:hotel_id>', methods=['DELETE'])
+def delete_hotel(hotel_id):
+    print(f"Deleting hotel with ID: {hotel_id}")
+    return jsonify({"success": True, "message": "Hotel deleted successfully"})
 
 if __name__ == '__main__':
     app.run(debug=True)
