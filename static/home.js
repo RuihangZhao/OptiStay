@@ -118,64 +118,71 @@ async function geocodeLocation(location) {
     return null;
   }
 
-function fetchData(page, itemsPerPage, country, city, address, zipcode){
-    axios({method: 'GET', url: 'http://127.0.0.1:5000/hotelInfo',
-        params: {'country': country, 'city': city, 'address': address, 'zipcode': zipcode, 'page': page, 'limit': itemsPerPage}}).then(async function (res){
-            const dataContainer = document.getElementById("result_list");
-            dataContainer.innerHTML = "";
-            res = res.data;
-            let length = res["length"];
-            let hotelData = res["hotelData"];
-            let totalPage = Math.ceil(length / itemsPerPage);
+function fetchData(page, itemsPerPage, country, city, address, zipcode) {
+    axios({
+        method: 'GET',
+        url: 'http://127.0.0.1:5000/hotelInfo',
+        params: {'country': country, 'city': city, 'address': address, 'zipcode': zipcode, 'page': page, 'limit': itemsPerPage}
+    }).then(async function (res) {
+        const dataContainer = document.getElementById("result_list");
+        dataContainer.innerHTML = "";
+        res = res.data;
+        let length = res["length"];
+        let hotelData = res["hotelData"];
+        let totalPage = Math.ceil(length / itemsPerPage);
 
-            if (length === 0){
-                document.getElementById("result_info").innerHTML = "No Hotels Found in " + city;
-                document.getElementById("result_list").style.display = 'none';
+        if (length === 0) {
+            document.getElementById("result_info").innerHTML = "No Hotels Found in " + city;
+            document.getElementById("result_list").style.display = 'none';
+        } else {
+            if (city) {
+                document.getElementById("result_info").innerHTML = city + ": " + length.toString() + " Hotels Found";
             } else {
-                if (city){
-                    document.getElementById("result_info").innerHTML = city + ": " + length.toString() + " Hotels Found";
+                document.getElementById("result_info").innerHTML = length.toString() + " Hotels Found";
+            }
+
+            hotelData.forEach((item, index) => {
+                let hotel = document.createElement('div');
+                let starsHtml = '';
+                for (let i = 0; i < item["starrating"]; i++) {
+                    starsHtml += '<i class="fas fa-star" style="color: rgba(251,188,101,255);"></i>';
                 }
-                else {
-                    document.getElementById("result_info").innerHTML = length.toString() + " Hotels Found";
-                }
-                hotelData.forEach((item,index) =>{
-                    let hotel = document.createElement('div');
-                    let starsHtml = '';
-                    for (let i = 0; i < item["starrating"]; i++) {
-                        starsHtml += '<i class="fas fa-star" style="color: rgba(251,188,101,255);"></i>';
-                    }
-                    hotel.className = "container box1";
-                    hotel.innerHTML = `
-                        <div class="row" style="cursor: pointer" onclick=window.open('${item["final_url"]}')>
-                            <div class="col-md-3 mt-2 mb-2 ml-2 mr-2 pl-0 pr-0 box1" style="height:150px">
-                                <a><img class="border-0" height="100%" width="100%" src='${item["image_url"]}'></a>
-                            </div>
-                            <div class="col-md-5 mt-2 mb-2 ml-2 mr-2 pl-0 pr-0">
-                                <h4 style="color: rgb(28, 93, 111)">${item["hotelname"]}</h4>
-                                <div>${starsHtml}</div>
-                                <p style="color: rgb(28, 93, 111)">${item["address"]}</p>
+                hotel.className = "container box1";
+                hotel.innerHTML = `
+                    <div class="row" style="cursor: pointer" onclick=window.open('${item["url"]}')>
+                        <div class="col-md-3 mt-2 mb-2 ml-2 mr-2 pl-0 pr-0 box1" style="height:150px">
+                            <a><img class="border-0" height="100%" width="100%" src='${item["image_url"]}'></a>
+                        </div>
+                        <div class="col-md-6 mt-2 mb-2 ml-2 mr-2 pl-0 pr-0">
+                            <h4 style="color: rgb(28, 93, 111)">${item["hotelname"]}</h4>
+                            <div>${starsHtml}</div>
+                            <p style="color: rgb(28, 93, 111)">${item["address"]}</p>
+                            <div class="row">
+                                <div class="col">Country: ${item["country"]}</div>
+                                <div class="col">City: ${item["city"]}</div>
+                                <div class="col">Type: ${item["propertytype"]}</div>
+                                <div class="col">Zipcode: ${item["zipcode"]}</div>
                             </div>
                         </div>
-                    `;
-                    dataContainer.appendChild(hotel);
-                });
-
-                updatePagination(page, totalPage);
-
-            }
-            const coordinates = await geocodeLocation(`${country} ${city}`);
-            document.getElementById('smallMap').addEventListener('click', function () {
-                $('#mapModal').on('shown.bs.modal', function () {
-                    initializeModalMap(coordinates[0], coordinates[1], hotelData);
-                  });
-                  
-                $('#mapModal').modal('show');
+                    </div>
+                `;
+                dataContainer.appendChild(hotel);
             });
-        }).catch(function (error){
-            console.error('Error fetching data:', error);
+
+            updatePagination(page, totalPage);
+        }
+
+        const coordinates = await geocodeLocation(`${country} ${city}`);
+        document.getElementById('smallMap').addEventListener('click', function () {
+            $('#mapModal').on('shown.bs.modal', function () {
+                initializeModalMap(coordinates[0], coordinates[1], hotelData);
+            });
+            $('#mapModal').modal('show');
+        });
+    }).catch(function (error) {
+        console.error('Error fetching data:', error);
     });
 }
-
 
 
 window.addEventListener('load',function (){
