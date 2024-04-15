@@ -1,8 +1,28 @@
-async function renderTable(){
-    try{
+async function renderTable() {
+    try {
         const tableBody = document.getElementById('datasetTableBody');
-        const res = await axios({ method: "GET", url: "http://127.0.0.1:5000/dataset" });
-        const hotelsData = res.data;
+        
+        // Get filter values
+        const country = document.getElementById('filterCountry').value;
+        const city = document.getElementById('filterCity').value;
+        const zipcode = document.getElementById('filterZipcode').value;
+
+        // Construct query parameters
+        const params = new URLSearchParams();
+        if (country) params.append('country', country);
+        if (city) params.append('city', city);
+        if (zipcode) params.append('zipcode', zipcode);
+        params.append('page', 1);
+        params.append('limit', 1000); // You can adjust this as needed
+
+        const res = await axios({
+            method: "GET",
+            url: "http://127.0.0.1:5000/hotelInfo",
+            params: params
+        });
+
+        let hotelsData = res.data.hotelData;
+
         let tableRows = `<thead>
         <tr>
             <th scope="col">id</th>
@@ -21,34 +41,32 @@ async function renderTable(){
             <th scope="col"></th>
         </tr>
         </thead>`;
-        tableRows+='<tbody>'
-       Object.entries(hotelsData).forEach(([hotelId, hotel]) => {
+        tableRows += '<tbody>';
+        hotelsData.forEach((hotel, index) => {
             tableRows += `
             <tr>
-              <td contenteditable="false" data-field="id">${hotel.id}</td>
-              <td contenteditable="false" data-field="hotelId">${hotelId}</td>
-              <td contenteditable="true" data-field="hotelname">${hotel.hotelname}</td>
-              <td contenteditable="true" data-field="address">${hotel.address}</td>
-              <td contenteditable="true" data-field="city">${hotel.city}</td>
-              <td contenteditable="true" data-field="country">${hotel.country}</td>
-              <td contenteditable="true" data-field="zipcode">${hotel.zipcode}</td>
-              <td contenteditable="true" data-field="propertytype">${hotel.propertytype}</td>
-              <td contenteditable="true" data-field="starrating">${hotel.starrating}</td>
-              <td contenteditable="true" data-field="latitude">${hotel.latitude.toFixed(2)}</td>
-              <td contenteditable="true" data-field="longitude">${hotel.longitude.toFixed(2)}</td>
-              <td contenteditable="true" data-field="source">${hotel.Source}</td>
-              <td contenteditable="true" data-field="url">${hotel.url}</td>
-              <td><button class="deleteButton" data-id="${hotelId}" onclick="handleRowDelete(event)">Delete</button></td>
+                <td contenteditable="false" data-field="id">${hotel.id}</td>
+                <td contenteditable="false" data-field="hotelId">${index}</td>
+                <td contenteditable="true" data-field="hotelname">${hotel.hotelname}</td>
+                <td contenteditable="true" data-field="address">${hotel.address}</td>
+                <td contenteditable="true" data-field="city">${hotel.city}</td>
+                <td contenteditable="true" data-field="country">${hotel.country}</td>
+                <td contenteditable="true" data-field="zipcode">${hotel.zipcode}</td>
+                <td contenteditable="true" data-field="propertytype">${hotel.propertytype}</td>
+                <td contenteditable="true" data-field="starrating">${hotel.starrating}</td>
+                <td contenteditable="true" data-field="latitude">${hotel.latitude.toFixed(2)}</td>
+                <td contenteditable="true" data-field="longitude">${hotel.longitude.toFixed(2)}</td>
+                <td contenteditable="true" data-field="source">${hotel.Source}</td>
+                <td contenteditable="true" data-field="url">${hotel.url}</td>
+                <td><button class="deleteButton" data-id="${index}" onclick="handleRowDelete(event)">Delete</button></td>
             </tr>
-          `;
+            `;
         });
-        tableRows+='</tbody>';
+        tableRows += '</tbody>';
         tableBody.innerHTML = tableRows;
-    } catch (error)
-    {
-        console.error("Error rendering hotel data: ", error)
+    } catch (error) {
+        console.error("Error rendering hotel data: ", error);
     }
-
 }
 
 function handleRowDelete(event)
@@ -152,7 +170,17 @@ async function handleCellEdit(event)
     }
 }
 
-window.addEventListener('load', function(){
-    renderTable()
+// window.addEventListener('load', function(){
+//     renderTable()
+//     document.addEventListener('input', handleCellEdit);
+// })
+
+window.addEventListener('load', function() {
+    renderTable();
     document.addEventListener('input', handleCellEdit);
-})
+
+    const filterButton = document.getElementById('filterButton');
+    filterButton.addEventListener('click', function() {
+        renderTable();
+    });
+});

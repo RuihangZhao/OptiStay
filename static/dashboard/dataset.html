@@ -176,23 +176,42 @@
     </div>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2">
+      
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2">
         <h1 class="h2 mr-5">Dataset</h1>
-        <div class="container ml-5" style="width: 90%;">
-            <form class="form-inline" style="width: 100%;">
-              <div class="form-group row text-left" style="width: 75%;">
-                <label for="filter" class="col-sm-2 col-form-label pr-0 mr-1" style="margin-left: -18px;">Filter: </label>
-                <div class="col-sm-10 ml-0 pl-0" style="width: 80%;">
-                  <input type="text"  class="form-control-plaintext border border-black rounded ml-0" id="filter">
-                </div>
-              </div>
-            </form>
-          </div>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group me-2">
-              <button id="insertButton" type="insert" class="btn btn-sm btn-outline-secondary" onclick="handleRowInsert()">Insert</button>
+                <button id="insertButton" type="insert" class="btn btn-sm btn-outline-secondary" onclick="handleRowInsert()">Insert</button>
             </div>
         </div>
+    </div>
+
+    <div class="text-left rounded-3 ml-3 mr-3 pl-3 pr-3">
+        <form class="container pt-3 pb-3">
+            <div class="row justify-content-center">
+                <div class="col px-1">
+                    <div class="form-group">
+                        <label for="filterCountry" class="font-weight-bold">Country</label>
+                        <input type="text" id="filterCountry" class="form-control">
+                    </div>
+                </div>
+                <div class="col px-1">
+                    <div class="form-group">
+                        <label for="filterCity" class="font-weight-bold">City</label>
+                        <input type="text" id="filterCity" class="form-control">
+                    </div>
+                </div>
+                <div class="col px-1">
+                    <div class="form-group">
+                        <label for="filterZipcode" class="font-weight-bold">Zipcode</label>
+                        <input type="text" id="filterZipcode" class="form-control">
+                    </div>
+                </div>
+                <div class="col px-1" style="margin-top: 33px;">
+                    <button type="button" id="filterButton" class="btn btn-primary">Apply Filter</button>
+                </div>
+            </div>
+        </form>
       </div>
 
       <!--For the dataset-->

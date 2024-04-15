@@ -49,17 +49,28 @@ def hotelInfo():
     address = request.args.get('address', None)
     zipcode = request.args.get('zipcode', None)
 
-    # get data, filter key order: zipcode -> city -> country -> address
-    if zipcode:
-        db_url = DATABASE_URL_1 + '.json?orderBy="zipcode"&equalTo=' + zipcode
-    elif city:
-        db_url = DATABASE_URL_1 + '.json?orderBy="city"&equalTo="' + city + '"'
-    elif country:
-        db_url = DATABASE_URL_1 + '.json?orderBy="country"&equalTo="' + country + '"'
-    else:
-        db_url = DATABASE_URL_1 + '.json?orderBy="address"&equalTo="' + address + '"'
+    db_urls = [DATABASE_URL_1, DATABASE_URL_2]
 
-    hotelData = list(json.loads(requests.get(db_url).text).values())
+    if country:
+        if country[0].upper() <= 'H':
+            db_urls = [DATABASE_URL_1]
+        else:
+            db_urls = [DATABASE_URL_2]
+
+    hotelData = []
+    for db_url in db_urls:
+        if zipcode:
+            url = db_url + '.json?orderBy="zipcode"&equalTo=' + zipcode
+        elif city:
+            url = db_url + '.json?orderBy="city"&equalTo="' + city + '"'
+        elif address:
+            url = db_url + '.json?orderBy="address"&equalTo="' + address + '"'
+        else:
+            url = db_url + '.json'
+
+        data = list(json.loads(requests.get(url).text).values())
+        hotelData.extend(data)
+
     def filterOnKeys(data):
         if country and not data.get('country') == country:
             return False
@@ -74,16 +85,13 @@ def hotelInfo():
     hotelData = list(filter(filterOnKeys, hotelData))
     hotelData = sorted(hotelData, key=lambda x: x["starrating"], reverse=True)
 
-    # divide the data into pages, default is 20 items per page
     page = int(request.args.get('page', 1))
     limit = int(request.args.get('limit', 20))
     start = (page - 1) * limit
     end = min(start + limit, len(hotelData))
     paginated_data = hotelData[start:end]
 
-    response = jsonify({'hotelData': paginated_data,
-                        'length': len(hotelData)})
-
+    response = jsonify({'hotelData': paginated_data, 'length': len(hotelData)})
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
