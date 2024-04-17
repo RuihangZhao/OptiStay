@@ -119,10 +119,25 @@ async function geocodeLocation(location) {
   }
 
 function fetchData(page, itemsPerPage, country, city, address, zipcode) {
+    let propertyTypes = [];
+    ['Hotels', 'Resorts', 'Bed and breakfasts', 'Campsites', 'Holiday parks'].forEach(id => {
+        if (document.getElementById(id).checked) {
+            propertyTypes.push(id);
+        }
+    });
+
+    let starRatings = [];
+    ['4', '3', '2'].forEach(id => {
+        if (document.getElementById(id).checked) {
+            starRatings.push(id[0]);
+        }
+    });
+
     axios({
         method: 'GET',
         url: 'http://127.0.0.1:5000/hotelInfo',
-        params: {'country': country, 'city': city, 'address': address, 'zipcode': zipcode, 'page': page, 'limit': itemsPerPage}
+        params: {'country': country, 'city': city, 'address': address, 'zipcode': zipcode, 'page': page, 'limit': itemsPerPage, 'propertyType[]': propertyTypes,
+        'starRating[]': starRatings}
     }).then(async function (res) {
         const dataContainer = document.getElementById("result_list");
         dataContainer.innerHTML = "";
@@ -135,6 +150,7 @@ function fetchData(page, itemsPerPage, country, city, address, zipcode) {
             document.getElementById("result_info").innerHTML = "No Hotels Found in " + city;
             document.getElementById("result_list").style.display = 'none';
         } else {
+            document.getElementById("result_list").style.display = 'block';
             if (city) {
                 document.getElementById("result_info").innerHTML = city + ": " + length.toString() + " Hotels Found";
             } else {
@@ -223,6 +239,11 @@ window.addEventListener('load',function (){
             currentPage++;
             fetchData(currentPage, itemsPerPage, country, city, address, zipcode);
             window.scrollTo(0, 0);
+        });
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                fetchData(currentPage, itemsPerPage, country, city, address, zipcode);
+            });
         });
     })
 

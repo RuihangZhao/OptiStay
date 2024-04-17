@@ -7,7 +7,7 @@ from itertools import islice
 
 DATABASE_URL_1 = 'https://dsci551-5pm-9f5a2-default-rtdb.firebaseio.com/hotels'
 DATABASE_URL_2 = 'https://dsci551-pro2-default-rtdb.firebaseio.com/hotels'
-# 还没写完DATABASE_URL_2的get
+
 
 DATABASE_URL_USERDATA = 'https://optistay-b3582-default-rtdb.firebaseio.com/'
 
@@ -48,7 +48,8 @@ def hotelInfo():
     city = request.args.get('city', None)
     address = request.args.get('address', None)
     zipcode = request.args.get('zipcode', None)
-
+    property_types = request.args.getlist('propertyType[]')
+    star_ratings = request.args.getlist('starRating[]')
     db_urls = [DATABASE_URL_1, DATABASE_URL_2]
 
     if country:
@@ -79,6 +80,10 @@ def hotelInfo():
         if address and address not in data.get('address'):
             return False
         if zipcode and not data.get('zipcode') == int(zipcode):
+            return False
+        if property_types and data.get('propertytype') not in property_types:
+            return False
+        if star_ratings and str(data.get('starrating')) not in star_ratings:
             return False
         return True
 
