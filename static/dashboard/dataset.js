@@ -1,17 +1,15 @@
-async function renderTable() {
+async function renderTable(filter = '') {
     try {
         const tableBody = document.getElementById('datasetTableBody');
-        
-        // Get filter values
-        const country = document.getElementById('filterCountry').value;
-        const city = document.getElementById('filterCity').value;
-        const zipcode = document.getElementById('filterZipcode').value;
 
         // Construct query parameters
         const params = new URLSearchParams();
-        if (country) params.append('country', country);
-        if (city) params.append('city', city);
-        if (zipcode) params.append('zipcode', zipcode);
+        if (filter) {
+            filter.split(',').forEach(item => {
+                const [key, value] = item.split('=');
+                params.append(key, value);
+            });
+        }
         params.append('page', 1);
         params.append('limit', 1000); // You can adjust this as needed
 
@@ -181,6 +179,15 @@ window.addEventListener('load', function() {
 
     const filterButton = document.getElementById('filterButton');
     filterButton.addEventListener('click', function() {
-        renderTable();
+        const filterCountry = document.getElementById('filterCountry').value;
+        const filterCity = document.getElementById('filterCity').value;
+        const filterZipcode = document.getElementById('filterZipcode').value;
+
+        const filterParams = [];
+        if (filterCountry) filterParams.push(`country=${filterCountry}`);
+        if (filterCity) filterParams.push(`city=${filterCity}`);
+        if (filterZipcode) filterParams.push(`zipcode=${filterZipcode}`);
+
+        renderTable(filterParams.join(','));
     });
 });

@@ -82,8 +82,10 @@ def hotelInfo():
             return False
         return True
 
-    hotelData = list(filter(filterOnKeys, hotelData))
-    hotelData = sorted(hotelData, key=lambda x: x["starrating"], reverse=True)
+    if country or city or address or zipcode:
+        hotelData = list(filter(filterOnKeys, hotelData))
+
+    hotelData = sorted(hotelData, key=lambda x: x.get("starrating", 0), reverse=True)
 
     page = int(request.args.get('page', 1))
     limit = int(request.args.get('limit', 20))
