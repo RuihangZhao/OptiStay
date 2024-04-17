@@ -1,4 +1,57 @@
-async function renderTable(filter = '') {
+async function renderTable(){
+    try{
+        const tableBody = document.getElementById('datasetTableBody');
+        const res = await axios({ method: "GET", url: "http://127.0.0.1:5000/dataset" });
+        const hotelsData = res.data;
+        let tableRows = `<thead>
+        <tr>
+            <th scope="col">id</th>
+            <th scope="col">hotelId</th>
+            <th scope="col">hotelName</th>
+            <th scope="col">address</th>
+            <th scope="col">city</th>
+            <th scope="col">country</th>
+            <th scope="col">zipCode</th>
+            <th scope="col">propertyType</th>
+            <th scope="col">starRating</th>
+            <th scope="col">latitude</th>
+            <th scope="col">longitude</th>
+            <th scope="col">source</th>
+            <th scope="col">url</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>`;
+        tableRows+='<tbody>'
+        Object.entries(hotelsData).forEach(([hotelId, hotel]) => {
+            tableRows += `
+            <tr>
+              <td contenteditable="false" data-field="id">${hotel.id}</td>
+              <td contenteditable="false" data-field="hotelId">${hotelId}</td>
+              <td contenteditable="true" data-field="hotelName">${hotel.hotelname}</td>
+              <td contenteditable="true" data-field="address">${hotel.address}</td>
+              <td contenteditable="true" data-field="city">${hotel.city}</td>
+              <td contenteditable="true" data-field="country">${hotel.country}</td>
+              <td contenteditable="true" data-field="zipCode">${hotel.zipcode}</td>
+              <td contenteditable="true" data-field="propertyType">${hotel.propertytype}</td>
+              <td contenteditable="true" data-field="starRating">${hotel.starrating}</td>
+              <td contenteditable="true" data-field="latitude">${hotel.latitude.toFixed(2)}</td>
+              <td contenteditable="true" data-field="longitude">${hotel.longitude.toFixed(2)}</td>
+              <td contenteditable="true" data-field="source">${hotel.Source}</td>
+              <td contenteditable="true" data-field="url">${hotel.url}</td>
+              <td><button class="deleteButton" data-id="${hotelId}" onclick="handleRowDelete(event)">Delete</button></td>
+            </tr>
+          `;
+        });
+        tableRows+='</tbody>';
+        tableBody.innerHTML = tableRows;
+    } catch (error)
+    {
+        console.error("Error rendering hotel data: ", error)
+    }
+
+}
+
+async function filterTable(filter = '') {
     try {
         const tableBody = document.getElementById('datasetTableBody');
 
@@ -175,7 +228,7 @@ async function handleCellEdit(event)
 
 window.addEventListener('load', function() {
     renderTable();
-    document.addEventListener('input', handleCellEdit);
+    document.getElementById('datasetTableBody').addEventListener('input', handleCellEdit);
 
     const filterButton = document.getElementById('filterButton');
     filterButton.addEventListener('click', function() {
@@ -188,6 +241,6 @@ window.addEventListener('load', function() {
         if (filterCity) filterParams.push(`city=${filterCity}`);
         if (filterZipcode) filterParams.push(`zipcode=${filterZipcode}`);
 
-        renderTable(filterParams.join(','));
+        filterTable(filterParams.join(','));
     });
 });

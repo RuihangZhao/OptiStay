@@ -153,7 +153,7 @@ function fetchData(page, itemsPerPage, country, city, address, zipcode) {
                         <div class="col-md-3 mt-2 mb-2 ml-2 mr-2 pl-0 pr-0 box1" style="height:150px">
                             <a><img class="border-0" height="100%" width="100%" src='${item["image_url"]}'></a>
                         </div>
-                        <div class="col-md-6 mt-2 mb-2 ml-2 mr-2 pl-0 pr-0">
+                        <div class="col-md-8 mt-2 mb-2 ml-2 mr-2 pl-0 pr-0">
                             <h4 style="color: rgb(28, 93, 111)">${item["hotelname"]}</h4>
                             <div>${starsHtml}</div>
                             <p style="color: rgb(28, 93, 111)">${item["address"]}</p>
@@ -161,7 +161,6 @@ function fetchData(page, itemsPerPage, country, city, address, zipcode) {
                                 <div class="col">Country: ${item["country"]}</div>
                                 <div class="col">City: ${item["city"]}</div>
                                 <div class="col">Type: ${item["propertytype"]}</div>
-                                <div class="col">Zipcode: ${item["zipcode"]}</div>
                             </div>
                         </div>
                     </div>

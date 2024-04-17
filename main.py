@@ -103,7 +103,7 @@ def dashboardInfo():
     response1 = requests.get(DATABASE_URL_1 + '.json').text
     data1 = json.loads(response1)
     response2 = requests.get(DATABASE_URL_2 + '.json').text
-    data2 = json.loads(response1)
+    data2 = json.loads(response2)
     data1.update(data2)
     return data1
 
