@@ -169,8 +169,8 @@ def update_hotel(hotel_id):
 
     url = f"{update_url}/{hotel_id}.json"
     patch_data = {field: value}
-    response = requests.patch(url, json=patch_data)
-
+    headers={'content-type': 'application/json'}
+    response = requests.patch(url, data=json.dumps(patch_data), headers = headers)
     if response.status_code != 200:
         return jsonify({"success": False, "message": "Failed to update hotel field"})
 

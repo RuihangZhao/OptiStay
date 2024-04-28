@@ -36,7 +36,6 @@ document.getElementById("button").addEventListener("click", function(){
     axios({method: 'POST', url: 'http://127.0.0.1:5000/searchKey', data: searchKey}).then(response => {
         console.log(response.data.message);
     });
-    // axios.put('http://127.0.0.1:5000/searchKey', searchKey);
 
     window.location.href = "result.html";
 

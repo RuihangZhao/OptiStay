@@ -13,10 +13,10 @@ async function renderTable(){
             <th scope="col">country</th>
             <th scope="col">zipCode</th>
             <th scope="col">propertyType</th>
-            <th scope="col">starRating</th>
+            <th scope="col">starratting</th>
             <th scope="col">latitude</th>
             <th scope="col">longitude</th>
-            <th scope="col">source</th>
+            <th scope="col">Source</th>
             <th scope="col">url</th>
             <th scope="col"></th>
         </tr>
@@ -27,16 +27,16 @@ async function renderTable(){
             <tr>
               <td contenteditable="false" data-field="id">${hotel.id}</td>
               <td contenteditable="false" data-field="hotelId">${hotelId}</td>
-              <td contenteditable="true" data-field="hotelName">${hotel.hotelname}</td>
+              <td contenteditable="true" data-field="hotelname">${hotel.hotelname}</td>
               <td contenteditable="true" data-field="address">${hotel.address}</td>
               <td contenteditable="true" data-field="city">${hotel.city}</td>
               <td contenteditable="true" data-field="country">${hotel.country}</td>
-              <td contenteditable="true" data-field="zipCode">${hotel.zipcode}</td>
-              <td contenteditable="true" data-field="propertyType">${hotel.propertytype}</td>
-              <td contenteditable="true" data-field="starRating">${hotel.starrating}</td>
+              <td contenteditable="true" data-field="zipcode">${hotel.zipcode}</td>
+              <td contenteditable="true" data-field="propertytype">${hotel.propertytype}</td>
+              <td contenteditable="true" data-field="starrating">${hotel.starrating}</td>
               <td contenteditable="true" data-field="latitude">${hotel.latitude.toFixed(2)}</td>
               <td contenteditable="true" data-field="longitude">${hotel.longitude.toFixed(2)}</td>
-              <td contenteditable="true" data-field="source">${hotel.Source}</td>
+              <td contenteditable="true" data-field="Source">${hotel.Source}</td>
               <td contenteditable="true" data-field="url">${hotel.url}</td>
               <td><button class="deleteButton" data-id="${hotelId}" onclick="handleRowDelete(event)">Delete</button></td>
             </tr>
@@ -107,7 +107,7 @@ async function filterTable(filter = '') {
                 <td contenteditable="true" data-field="starrating">${hotel.starrating}</td>
                 <td contenteditable="true" data-field="latitude">${hotel.latitude.toFixed(2)}</td>
                 <td contenteditable="true" data-field="longitude">${hotel.longitude.toFixed(2)}</td>
-                <td contenteditable="true" data-field="source">${hotel.Source}</td>
+                <td contenteditable="true" data-field="Source">${hotel.Source}</td>
                 <td contenteditable="true" data-field="url">${hotel.url}</td>
                 <td><button class="deleteButton" data-id="${index}" onclick="handleRowDelete(event)">Delete</button></td>
             </tr>
@@ -187,7 +187,6 @@ async function handleCellEdit(event)
         const field = event.target.getAttribute('data-field');
         let value = event.target.textContent;
         const country = row.querySelector('[data-field="country"]').textContent;
-
         switch (field) {
             case 'id':
             case 'zipcode':
