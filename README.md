@@ -28,37 +28,37 @@ python main.py
 
 pre (files for data cleaning)
 
-  update_status_code.py filter invalid URL
+**update_status_code.py filter invalid URL
   
-  get_image_urls.py get image url for each hotels
+**get_image_urls.py get image url for each hotels
   
-  Firebase_data.py process and upload data to Firebase
+**Firebase_data.py process and upload data to Firebase
   
-  other for testing
+**other for testing
   
 static (HTML, CSS, Javascript)
 
-  index.html home page
+**index.html home page
   
-  result.html result page
+**result.html result page
   
-  home.js javascript code for end-user interface
+**home.js javascript code for end-user interface
   
-  styles.css, result.css for style
+**styles.css, result.css for style
   
-  dashboard
+**dashboard
   
-    dashboard.html dashboard page
+****dashboard.html dashboard page
     
-    dashboard.js javascript code for dashboard page
+****dashboard.js javascript code for dashboard page
     
-    dataset.html hotels dataset page
+****dataset.html hotels dataset page
     
-    dataset.js javascript code for hotels dataset page
+****dataset.js javascript code for hotels dataset page
     
-    analysis.html user analysis page 
+****analysis.html user analysis page 
     
-    analysis.js javascript code for user analysis page
+****analysis.js javascript code for user analysis page
     
 main.py flask backend code
     
