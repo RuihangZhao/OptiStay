@@ -8,3 +8,12 @@
 3. Run the program <br>
    python main.py
 
+--for mac
+python3 -m venv env
+source env/bin/activate
+pip install flask
+pip install flask-cors
+pip install requests
+cd OptiStay
+python main.py
+
